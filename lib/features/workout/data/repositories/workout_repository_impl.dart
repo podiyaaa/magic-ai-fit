@@ -37,7 +37,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     try {
       final workoutModel = WorkoutModel.fromEntity(workout);
       await localDataSource.updateWorkout(workoutModel);
-      return Right(null);
+      return const Right(null);
     } on CacheException {
       return Left(CacheFailure());
     }
@@ -47,7 +47,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   Future<Either<Failure, void>> deleteWorkout(String id) async {
     try {
       await localDataSource.deleteWorkout(id);
-      return Right(null);
+      return const Right(null);
     } on CacheException {
       return Left(CacheFailure());
     }
