@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:magic_ai_fit/features/workout/presentation/viewmodels/workout_viewmodel.dart';
+import 'package:magic_ai_fit/features/workout/presentation/widgets/delete_workout_alert.dart';
 import 'package:provider/provider.dart';
+
 import '../viewmodels/workout_list_viewmodel.dart';
+import '../viewmodels/workout_viewmodel.dart';
+import '../widgets/workout_list_tile.dart';
 import 'workout_view.dart';
 
 class WorkoutListView extends StatelessWidget {
@@ -22,24 +25,28 @@ class WorkoutListView extends StatelessWidget {
               itemCount: viewModel.workouts.length,
               itemBuilder: (context, index) {
                 final workout = viewModel.workouts[index];
-                return ListTile(
-                  title: Text(workout.name),
-                  subtitle: Text('${workout.sets.length} sets'),
-                  onTap: () async {
-                    context.read<WorkoutViewModel>().setWorkout(workout);
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const WorkoutView(),
-                      ),
-                    );
-                    context.read<WorkoutListViewModel>().loadWorkouts();
-                  },
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => viewModel.removeWorkout(workout.id),
-                  ),
-                );
+                return WorkoutListTile(
+                    key: ValueKey(workout.id),
+                    title: workout.name,
+                    subtitle: '${workout.sets.length} sets',
+                    workout: workout,
+                    onTap: () async {
+                      context.read<WorkoutViewModel>().setWorkout(workout);
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WorkoutView(),
+                        ),
+                      );
+                      context.read<WorkoutListViewModel>().loadWorkouts();
+                    },
+                    onDelete: () async {
+                      final canDelete =
+                          await _showDeleteDialog(context, workout);
+                      if (canDelete ?? false) {
+                        viewModel.removeWorkout(workout.id);
+                      }
+                    });
               },
             );
           }
@@ -55,6 +62,15 @@ class WorkoutListView extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Future<bool?> _showDeleteDialog(BuildContext context, Workout) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return const DeleteWorkoutAlert();
+      },
     );
   }
 }

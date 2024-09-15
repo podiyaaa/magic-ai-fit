@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
-import 'package:magic_ai_fit/core/error/failures.dart';
+
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/workout.dart';
 import '../../domain/usecases/add_workout.dart';
 import '../../domain/usecases/update_workout.dart';
