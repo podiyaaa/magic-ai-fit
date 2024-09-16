@@ -40,18 +40,8 @@ class WorkoutView extends StatelessWidget {
                   id: set.hashCode.toString(),
                   title: set.exercise.value,
                   subtitle: '${set.weight} kg x ${set.repetitions} reps',
-                  onEdit: () async {
-                    final updatedSet = await _showEditDialog(context, set);
-                    if (updatedSet != null) {
-                      viewModel.updateSet(index, updatedSet);
-                    }
-                  },
-                  onDelete: () async {
-                    final canDelete = await _showDeleteDialog(context, set);
-                    if (canDelete ?? false) {
-                      viewModel.removeSet(index);
-                    }
-                  },
+                  onEdit: () => _onEditSet(context, set, viewModel, index),
+                  onDelete: () => _onDeleteSet(context, index, viewModel),
                 );
               },
             );
@@ -61,60 +51,93 @@ class WorkoutView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
-              heroTag: 'addSet',
-              onPressed: () async {
-                final set = await _showAddDialog(context);
-                if (set != null) {
-                  context.read<WorkoutViewModel>().addSet(set);
-                }
-              },
+              key: const ValueKey('workout_new_set_fab'),
+              heroTag: 'workout_new_set_fab',
+              onPressed: () => _onNewSet(context),
               child: const Icon(Icons.add),
             ),
             const SizedBox(height: 16),
             FloatingActionButton(
-              heroTag: 'saveWorkout',
-              onPressed: () async {
-                // check if there is on going save
-                if (context.read<WorkoutViewModel>().isLoading) {
-                  return;
-                }
-                final workout = context.read<WorkoutViewModel>().workout;
-                if (workout == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No workout to save.')),
-                  );
-                  return;
-                }
-                final isEmpty = workout.sets.isEmpty;
-                if (isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Add at least one set.')),
-                  );
-                  return;
-                }
-                final name = await _showNameEditDialog(context, workout.name);
-                if (name == null) {
-                  return;
-                }
-                if (name.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Name cannot be empty.')),
-                  );
-                  return;
-                }
-                context.read<WorkoutViewModel>().updateName(name);
-                final success =
-                    await context.read<WorkoutViewModel>().saveWorkout();
-                if (success) {
-                  Navigator.pop(context);
-                }
-              },
+              key: const ValueKey('workout_save_fab'),
+              heroTag: 'workout_save_fab',
+              onPressed: () => _onSave(context),
               child: const Icon(Icons.save),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _onNewSet(BuildContext context) async {
+    final set = await _showAddDialog(context);
+    if (set != null) {
+      // ignore: use_build_context_synchronously
+      context.read<WorkoutViewModel>().addSet(set);
+    }
+  }
+
+  void _onSave(BuildContext context) async {
+    // check if there is on going save
+    if (context.read<WorkoutViewModel>().isLoading) {
+      return;
+    }
+    final workout = context.read<WorkoutViewModel>().workout;
+    if (workout == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No workout to save.')),
+      );
+      return;
+    }
+    final isEmpty = workout.sets.isEmpty;
+    if (isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Add at least one set.')),
+      );
+      return;
+    }
+    final name = await _showNameEditDialog(context, workout.name);
+    if (name == null) {
+      return;
+    }
+    if (name.isEmpty) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name cannot be empty.')),
+      );
+      return;
+    }
+    // ignore: use_build_context_synchronously
+    context.read<WorkoutViewModel>().updateName(name);
+    // ignore: use_build_context_synchronously
+    final success = await context.read<WorkoutViewModel>().saveWorkout();
+    if (success) {
+      // ignore: use_build_context_synchronously
+      Navigator.pop(context);
+    }
+  }
+
+  void _onEditSet(
+    BuildContext context,
+    WorkoutSet set,
+    WorkoutViewModel viewModel,
+    int index,
+  ) async {
+    final updatedSet = await _showEditDialog(context, set);
+    if (updatedSet != null) {
+      viewModel.updateSet(index, updatedSet);
+    }
+  }
+
+  void _onDeleteSet(
+    BuildContext context,
+    int index,
+    WorkoutViewModel viewModel,
+  ) async {
+    final canDelete = await _showDeleteDialog(context);
+    if (canDelete ?? false) {
+      viewModel.removeSet(index);
+    }
   }
 
   Future<WorkoutSet?> _showAddDialog(BuildContext context) async {
@@ -146,7 +169,7 @@ class WorkoutView extends StatelessWidget {
     );
   }
 
-  Future<bool?> _showDeleteDialog(BuildContext context, WorkoutSet set) async {
+  Future<bool?> _showDeleteDialog(BuildContext context) async {
     return await showDialog<bool>(
       context: context,
       builder: (context) => const DeleteSetAlert(),

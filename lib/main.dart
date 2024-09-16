@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'features/workout/presentation/viewmodels/workout_viewmodel.dart';
 import 'package:provider/provider.dart';
+
 import 'features/workout/presentation/viewmodels/workout_list_viewmodel.dart';
+import 'features/workout/presentation/viewmodels/workout_viewmodel.dart';
 import 'features/workout/presentation/views/workout_list_view.dart';
 import 'injection_container.dart' as di;
 

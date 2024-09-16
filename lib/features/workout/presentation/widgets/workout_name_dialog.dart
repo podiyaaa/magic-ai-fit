@@ -20,17 +20,20 @@ class _WorkoutNameDialogState extends State<WorkoutNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Name'),
+      title: const Text('Edit name'),
       content: TextField(
+        key: const ValueKey('workout_name_dialog_text_field'),
         controller: _nameController,
         decoration: const InputDecoration(labelText: 'Name'),
       ),
       actions: [
         TextButton(
+          key: const ValueKey('workout_name_dialog_cancel_button'),
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
+          key: const ValueKey('workout_name_dialog_save_button'),
           onPressed: () => Navigator.of(context).pop(_nameController.text),
           child: const Text('Save'),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../domain/entities/workout.dart';
 
 class AddSetDialog extends StatefulWidget {
@@ -35,7 +36,7 @@ class _AddSetDialogState extends State<AddSetDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Set'),
+      title: const Text('Add set'),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -43,6 +44,7 @@ class _AddSetDialogState extends State<AddSetDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField(
+                  key: const ValueKey('add_set_exercise_dropdown'),
                   value: _exercise,
                   items: Exercise.values
                       .map((exercise) => DropdownMenuItem<Exercise>(
@@ -54,6 +56,7 @@ class _AddSetDialogState extends State<AddSetDialog> {
                     _exercise = value;
                   }),
               TextFormField(
+                key: const ValueKey('add_set_weight_field'),
                 controller: _weightController,
                 decoration: const InputDecoration(labelText: 'Weight (kg)'),
                 keyboardType:
@@ -72,6 +75,7 @@ class _AddSetDialogState extends State<AddSetDialog> {
                 },
               ),
               TextFormField(
+                key: const ValueKey('add_set_reps_field'),
                 controller: _repsController,
                 decoration: const InputDecoration(labelText: 'Repetitions'),
                 keyboardType: TextInputType.number,
@@ -98,6 +102,7 @@ class _AddSetDialogState extends State<AddSetDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
+          key: const ValueKey('add_set_save_button'),
           onPressed: () {
             if (!_formKey.currentState!.validate()) {
               return;

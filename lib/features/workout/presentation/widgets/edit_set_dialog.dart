@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../domain/entities/workout.dart';
 
 class EditSetDialog extends StatefulWidget {
@@ -38,7 +39,7 @@ class _EditSetDialogState extends State<EditSetDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Set'),
+      title: const Text('Edit set'),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
