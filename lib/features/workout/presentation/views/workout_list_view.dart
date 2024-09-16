@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:magic_ai_fit/features/workout/presentation/widgets/delete_workout_alert.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodels/workout_list_viewmodel.dart';
 import '../viewmodels/workout_viewmodel.dart';
+import '../widgets/delete_workout_alert.dart';
 import '../widgets/workout_list_tile.dart';
 import 'workout_view.dart';
 

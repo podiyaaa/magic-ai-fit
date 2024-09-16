@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
+
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/workout.dart';
-import '../../domain/usecases/get_workouts.dart';
 import '../../domain/usecases/delete_workout.dart';
+import '../../domain/usecases/get_workouts.dart';
 
 class WorkoutListViewModel extends ChangeNotifier {
   final GetWorkouts getWorkouts;
