@@ -2,20 +2,20 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../utils/app_configs.dart';
 import '../../domain/entities/workout.dart';
 import '../../domain/usecases/add_workout.dart';
 import '../../domain/usecases/update_workout.dart';
 
 class WorkoutViewModel extends ChangeNotifier {
-  final AddWorkout addWorkout;
-  final UpdateWorkout updateWorkout;
-  final List<Exercise> exercises;
-
   WorkoutViewModel({
     required this.addWorkout,
     required this.updateWorkout,
-    required this.exercises,
+    required this.appConfigs,
   });
+  final AddWorkout addWorkout;
+  final UpdateWorkout updateWorkout;
+  final AppConfigs appConfigs;
 
   Workout? _workout;
   Workout? get workout => _workout;

@@ -2,10 +2,6 @@ import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class Workout extends Equatable {
-  String id;
-  final List<WorkoutSet> sets;
-  String name = '';
-
   Workout({
     required this.id,
     required this.sets,
@@ -19,6 +15,9 @@ class Workout extends Equatable {
       name: '',
     );
   }
+  String id;
+  final List<WorkoutSet> sets;
+  String name = '';
 
   @override
   List<Object> get props => [id, sets];
@@ -39,14 +38,13 @@ class Workout extends Equatable {
 }
 
 class WorkoutSet extends Equatable {
-  final Exercise exercise;
-  final double weight;
-  final int repetitions;
-
   const WorkoutSet(
       {required this.exercise,
       required this.weight,
       required this.repetitions});
+  final Exercise exercise;
+  final double weight;
+  final int repetitions;
 
   @override
   List<Object> get props => [exercise, weight, repetitions];

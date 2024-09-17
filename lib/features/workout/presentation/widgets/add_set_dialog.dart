@@ -1,35 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../domain/entities/workout.dart';
+import 'choice_chip_picker.dart';
 
 class AddSetDialog extends StatefulWidget {
-  const AddSetDialog({super.key, required this.exercises});
+  const AddSetDialog({
+    super.key,
+    required this.exercises,
+    required this.weights,
+    required this.repetitions,
+  });
 
   final List<Exercise> exercises;
+  final List<double> weights;
+  final List<int> repetitions;
 
   @override
   State<AddSetDialog> createState() => _AddSetDialogState();
 }
 
 class _AddSetDialogState extends State<AddSetDialog> {
-  late TextEditingController _weightController;
-  late TextEditingController _repsController;
+  WeightChoiceChipData? _selectedWeightChoice;
+  RepetitionChoiceChipData? _selectedRepsChoice;
   late final List<Exercise> _exercises = widget.exercises;
   late Exercise? _exercise = _exercises.firstOrNull;
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-    _weightController = TextEditingController(text: '');
-    _repsController = TextEditingController(text: '');
-  }
+  final ValueNotifier<bool> _showWeightNotFound = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _showRepsNotFound = ValueNotifier<bool>(false);
 
   @override
   void dispose() {
-    _weightController.dispose();
-    _repsController.dispose();
+    _showWeightNotFound.dispose();
+    _showRepsNotFound.dispose();
     super.dispose();
   }
 
@@ -38,62 +39,108 @@ class _AddSetDialogState extends State<AddSetDialog> {
     return AlertDialog(
       title: const Text('Add set'),
       content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField(
-                  key: const ValueKey('add_set_exercise_dropdown'),
-                  value: _exercise,
-                  items: Exercise.values
-                      .map((exercise) => DropdownMenuItem<Exercise>(
-                            value: exercise,
-                            child: Text(exercise.value),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    _exercise = value;
-                  }),
-              TextFormField(
-                key: const ValueKey('add_set_weight_field'),
-                controller: _weightController,
-                decoration: const InputDecoration(labelText: 'Weight (kg)'),
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField(
+              key: const ValueKey('add_set_exercise_dropdown'),
+              value: _exercise,
+              items: Exercise.values
+                  .map((exercise) => DropdownMenuItem<Exercise>(
+                        value: exercise,
+                        child: Text(exercise.value),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                _exercise = value;
+              },
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: _showWeightNotFound,
+                    builder: (context, value, child) {
+                      if (value) {
+                        return const Text(
+                          'Weight not found',
+                          style: TextStyle(color: Colors.red),
+                        );
+                      } else {
+                        return Text(
+                          'Weight',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        );
+                      }
+                    },
+                  ),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a weight';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid weight';
-                  }
-                  return null;
+              ),
+            ),
+            Container(
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.all(8.0),
+              child: ChoiceChipPicker<WeightChoiceChipData>(
+                valueKey: const ValueKey('add_set_weight_choice_chip_picker'),
+                choices: widget.weights
+                    .map(
+                      (weight) => WeightChoiceChipData(
+                        label: '$weight',
+                        value: weight,
+                      ),
+                    )
+                    .toList(),
+                onSelected: (value) {
+                  _selectedWeightChoice = value;
                 },
               ),
-              TextFormField(
-                key: const ValueKey('add_set_reps_field'),
-                controller: _repsController,
-                decoration: const InputDecoration(labelText: 'Repetitions'),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: _showRepsNotFound,
+                    builder: (context, value, child) {
+                      if (value) {
+                        return const Text(
+                          'Repetitions not found',
+                          style: TextStyle(color: Colors.red),
+                        );
+                      } else {
+                        return Text('Repetitions',
+                            style: Theme.of(context).textTheme.titleMedium);
+                      }
+                    },
+                  )
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a repetitions';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Please enter a valid repetitions';
-                  }
-                  return null;
+              ),
+            ),
+            Container(
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.all(8.0),
+              child: ChoiceChipPicker<RepetitionChoiceChipData>(
+                valueKey: const ValueKey('add_set_reps_choice_chip_picker'),
+                choices: widget.repetitions
+                    .map(
+                      (weight) => RepetitionChoiceChipData(
+                        label: '$weight',
+                        value: weight,
+                      ),
+                    )
+                    .toList(),
+                onSelected: (value) {
+                  _selectedRepsChoice = value;
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       actions: [
@@ -104,16 +151,17 @@ class _AddSetDialogState extends State<AddSetDialog> {
         ElevatedButton(
           key: const ValueKey('add_set_save_button'),
           onPressed: () {
-            if (!_formKey.currentState!.validate()) {
-              return;
-            }
-            if (_exercise == null) {
+            if (_exercise == null ||
+                _selectedWeightChoice == null ||
+                _selectedRepsChoice == null) {
+              _showWeightNotFound.value = _selectedWeightChoice == null;
+              _showRepsNotFound.value = _selectedRepsChoice == null;
               return;
             }
             final newSet = WorkoutSet(
               exercise: _exercise!,
-              weight: double.tryParse(_weightController.text) ?? 0,
-              repetitions: int.tryParse(_repsController.text) ?? 0,
+              weight: _selectedWeightChoice!.value,
+              repetitions: _selectedRepsChoice!.value,
             );
             Navigator.of(context).pop(newSet);
           },

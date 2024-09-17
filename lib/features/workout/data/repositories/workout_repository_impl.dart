@@ -8,9 +8,8 @@ import '../datasources/workout_local_data_source.dart';
 import '../models/workout_model.dart';
 
 class WorkoutRepositoryImpl implements WorkoutRepository {
-  final WorkoutLocalDataSource localDataSource;
-
   WorkoutRepositoryImpl({required this.localDataSource});
+  final WorkoutLocalDataSource localDataSource;
 
   @override
   Future<Either<Failure, List<Workout>>> getWorkouts() async {

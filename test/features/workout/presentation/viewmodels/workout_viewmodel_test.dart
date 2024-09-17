@@ -5,6 +5,7 @@ import 'package:magic_ai_fit/features/workout/domain/entities/workout.dart';
 import 'package:magic_ai_fit/features/workout/domain/usecases/add_workout.dart';
 import 'package:magic_ai_fit/features/workout/domain/usecases/update_workout.dart';
 import 'package:magic_ai_fit/features/workout/presentation/viewmodels/workout_viewmodel.dart';
+import 'package:magic_ai_fit/utils/app_configs.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -15,16 +16,16 @@ void main() {
   late WorkoutViewModel viewModel;
   late MockAddWorkout mockAddWorkout;
   late MockUpdateWorkout mockUpdateWorkout;
-  late List<Exercise> testExercises;
+  late AppConfigs appConfigs;
 
   setUp(() {
     mockAddWorkout = MockAddWorkout();
     mockUpdateWorkout = MockUpdateWorkout();
-    testExercises = [Exercise.barbellRow, Exercise.benchPress];
+    appConfigs = AppConfigs();
     viewModel = WorkoutViewModel(
       addWorkout: mockAddWorkout,
       updateWorkout: mockUpdateWorkout,
-      exercises: testExercises,
+      appConfigs: appConfigs,
     );
   });
 

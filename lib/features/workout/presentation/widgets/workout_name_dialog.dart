@@ -10,6 +10,7 @@ class WorkoutNameDialog extends StatefulWidget {
 
 class _WorkoutNameDialogState extends State<WorkoutNameDialog> {
   late final _nameController = TextEditingController(text: widget.workoutName);
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -21,10 +22,19 @@ class _WorkoutNameDialogState extends State<WorkoutNameDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Edit name'),
-      content: TextField(
-        key: const ValueKey('workout_name_dialog_text_field'),
-        controller: _nameController,
-        decoration: const InputDecoration(labelText: 'Name'),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          key: const ValueKey('workout_name_dialog_text_field'),
+          controller: _nameController,
+          decoration: const InputDecoration(labelText: 'Name'),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter a name';
+            }
+            return null;
+          },
+        ),
       ),
       actions: [
         TextButton(
@@ -34,7 +44,11 @@ class _WorkoutNameDialogState extends State<WorkoutNameDialog> {
         ),
         ElevatedButton(
           key: const ValueKey('workout_name_dialog_save_button'),
-          onPressed: () => Navigator.of(context).pop(_nameController.text),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              Navigator.of(context).pop(_nameController.text);
+            }
+          },
           child: const Text('Save'),
         ),
       ],

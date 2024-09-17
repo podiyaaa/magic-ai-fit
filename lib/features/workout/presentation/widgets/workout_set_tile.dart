@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
 class WorkoutSetTile extends StatelessWidget {
-  final String id;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final String title;
-  final String subtitle;
-
   const WorkoutSetTile({
     super.key,
     required this.id,
@@ -15,6 +9,11 @@ class WorkoutSetTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
   });
+  final String id;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {

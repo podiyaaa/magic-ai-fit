@@ -1,88 +1,99 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../domain/entities/workout.dart';
+import 'choice_chip_picker.dart';
 
 class EditSetDialog extends StatefulWidget {
-  final WorkoutSet set;
-
   const EditSetDialog({
     super.key,
     required this.set,
+    required this.weights,
+    required this.repetitions,
   });
+
+  final List<double> weights;
+  final List<int> repetitions;
+  final WorkoutSet set;
 
   @override
   State<EditSetDialog> createState() => _EditSetDialogState();
 }
 
 class _EditSetDialogState extends State<EditSetDialog> {
-  late TextEditingController _weightController;
-  late TextEditingController _repsController;
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-    _weightController =
-        TextEditingController(text: widget.set.weight.toString());
-    _repsController =
-        TextEditingController(text: widget.set.repetitions.toString());
-  }
-
-  @override
-  void dispose() {
-    _weightController.dispose();
-    _repsController.dispose();
-    super.dispose();
-  }
+  late WeightChoiceChipData _selectedWeightChoice = WeightChoiceChipData(
+      label: widget.set.weight.toString(), value: widget.set.weight);
+  late RepetitionChoiceChipData _selectedRepsChoice = RepetitionChoiceChipData(
+      label: widget.set.repetitions.toString(), value: widget.set.repetitions);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Edit set'),
       content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _weightController,
-                decoration: const InputDecoration(labelText: 'Weight (kg)'),
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Weight',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a weight';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid weight';
-                  }
-                  return null;
+              ),
+            ),
+            Container(
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.all(8.0),
+              child: ChoiceChipPicker<WeightChoiceChipData>(
+                valueKey: const ValueKey('add_set_weight_choice_chip_picker'),
+                choices: widget.weights
+                    .map(
+                      (weight) => WeightChoiceChipData(
+                        label: '$weight',
+                        value: weight,
+                      ),
+                    )
+                    .toList(),
+                selectedChoice: _selectedWeightChoice,
+                onSelected: (value) {
+                  _selectedWeightChoice = value;
                 },
               ),
-              TextFormField(
-                controller: _repsController,
-                decoration: const InputDecoration(labelText: 'Repetitions'),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Text('Repetitions',
+                      style: Theme.of(context).textTheme.titleMedium),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a repetitions';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Please enter a valid repetitions';
-                  }
-                  return null;
+              ),
+            ),
+            Container(
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.all(8.0),
+              child: ChoiceChipPicker<RepetitionChoiceChipData>(
+                valueKey: const ValueKey('add_set_reps_choice_chip_picker'),
+                choices: widget.repetitions
+                    .map(
+                      (weight) => RepetitionChoiceChipData(
+                        label: '$weight',
+                        value: weight,
+                      ),
+                    )
+                    .toList(),
+                selectedChoice: _selectedRepsChoice,
+                onSelected: (value) {
+                  _selectedRepsChoice = value;
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       actions: [
@@ -92,13 +103,10 @@ class _EditSetDialogState extends State<EditSetDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) {
-              return;
-            }
             final updatedSet = WorkoutSet(
-              exercise: Exercise.barbellRow,
-              weight: double.tryParse(_weightController.text) ?? 0,
-              repetitions: int.tryParse(_repsController.text) ?? 0,
+              exercise: widget.set.exercise,
+              weight: _selectedWeightChoice.value,
+              repetitions: _selectedRepsChoice.value,
             );
             Navigator.of(context).pop(updatedSet);
           },

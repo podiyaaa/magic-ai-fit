@@ -2,6 +2,13 @@ import '../../domain/entities/workout.dart';
 
 // ignore: must_be_immutable
 class WorkoutModel extends Workout {
+  factory WorkoutModel.fromEntity(Workout workout) {
+    return WorkoutModel(
+      id: workout.id,
+      sets: workout.sets.map((set) => WorkoutSetModel.fromEntity(set)).toList(),
+      name: workout.name,
+    );
+  }
   WorkoutModel({required super.id, required super.sets, required super.name});
 
   factory WorkoutModel.fromJson(Map<String, dynamic> json) {
@@ -22,14 +29,6 @@ class WorkoutModel extends Workout {
     };
   }
 
-  factory WorkoutModel.fromEntity(Workout workout) {
-    return WorkoutModel(
-      id: workout.id,
-      sets: workout.sets.map((set) => WorkoutSetModel.fromEntity(set)).toList(),
-      name: workout.name,
-    );
-  }
-
   Workout toEntity() {
     return Workout(
         id: id,
@@ -39,6 +38,13 @@ class WorkoutModel extends Workout {
 }
 
 class WorkoutSetModel extends WorkoutSet {
+  factory WorkoutSetModel.fromEntity(WorkoutSet set) {
+    return WorkoutSetModel(
+      exercise: set.exercise,
+      weight: set.weight,
+      repetitions: set.repetitions,
+    );
+  }
   const WorkoutSetModel({
     required super.exercise,
     required super.weight,
@@ -59,14 +65,6 @@ class WorkoutSetModel extends WorkoutSet {
       'weight': weight,
       'repetitions': repetitions,
     };
-  }
-
-  factory WorkoutSetModel.fromEntity(WorkoutSet set) {
-    return WorkoutSetModel(
-      exercise: set.exercise,
-      weight: set.weight,
-      repetitions: set.repetitions,
-    );
   }
 
   WorkoutSet toEntity() {

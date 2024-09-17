@@ -6,15 +6,13 @@ import '../entities/workout.dart';
 import '../repositories/workout_repository.dart';
 
 class UpdateWorkoutParams {
-  final Workout workout;
-
   UpdateWorkoutParams(this.workout);
+  final Workout workout;
 }
 
 class UpdateWorkout implements UseCase<void, UpdateWorkoutParams> {
-  final WorkoutRepository repository;
-
   UpdateWorkout(this.repository);
+  final WorkoutRepository repository;
 
   @override
   Future<Either<Failure, void>> call(UpdateWorkoutParams params) async {

@@ -6,20 +6,33 @@ import '../viewmodels/workout_viewmodel.dart';
 import '../widgets/add_set_dialog.dart';
 import '../widgets/delete_set_alert.dart';
 import '../widgets/edit_set_dialog.dart';
+import '../widgets/unsaved_workout_alert.dart';
 import '../widgets/workout_name_dialog.dart';
 import '../widgets/workout_set_tile.dart';
 
-class WorkoutView extends StatelessWidget {
+class WorkoutView extends StatefulWidget {
   const WorkoutView({super.key});
+
+  @override
+  State<WorkoutView> createState() => _WorkoutViewState();
+}
+
+class _WorkoutViewState extends State<WorkoutView> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (context.read<WorkoutViewModel>().workout?.sets.isEmpty ?? true) {
+        _onNewSet(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          context.read<WorkoutViewModel>().reset();
-        }
-      },
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           title: Consumer<WorkoutViewModel>(
@@ -27,6 +40,17 @@ class WorkoutView extends StatelessWidget {
               return Text(viewModel.workout?.name.isEmpty ?? true
                   ? 'New Workout'
                   : viewModel.workout!.name);
+            },
+          ),
+          leading: BackButton(
+            onPressed: () async {
+              final canLeave = await _showUnsavedDialog(context);
+              if (canLeave) {
+                // ignore: use_build_context_synchronously
+                context.read<WorkoutViewModel>().reset();
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).pop();
+              }
             },
           ),
         ),
@@ -141,10 +165,13 @@ class WorkoutView extends StatelessWidget {
   }
 
   Future<WorkoutSet?> _showAddDialog(BuildContext context) async {
+    final appConfigs = context.read<WorkoutViewModel>().appConfigs;
     return await showDialog<WorkoutSet>(
       context: context,
       builder: (context) => AddSetDialog(
-        exercises: context.read<WorkoutViewModel>().exercises,
+        exercises: appConfigs.exercises,
+        weights: appConfigs.weights,
+        repetitions: appConfigs.repetitions,
       ),
     );
   }
@@ -161,10 +188,13 @@ class WorkoutView extends StatelessWidget {
 
   Future<WorkoutSet?> _showEditDialog(
       BuildContext context, WorkoutSet set) async {
+    final appConfigs = context.read<WorkoutViewModel>().appConfigs;
     return await showDialog<WorkoutSet>(
       context: context,
       builder: (context) => EditSetDialog(
         set: set,
+        weights: appConfigs.weights,
+        repetitions: appConfigs.repetitions,
       ),
     );
   }
@@ -174,5 +204,17 @@ class WorkoutView extends StatelessWidget {
       context: context,
       builder: (context) => const DeleteSetAlert(),
     );
+  }
+
+  Future<bool> _showUnsavedDialog(BuildContext context) async {
+    if (context.read<WorkoutViewModel>().workout?.name.isEmpty ?? true) {
+      return await showDialog<bool>(
+            context: context,
+            builder: (context) => const UnsavedWorkoutAlert(),
+          ) ??
+          false;
+    }
+    // we need to check updated workouts too. later...
+    return true;
   }
 }

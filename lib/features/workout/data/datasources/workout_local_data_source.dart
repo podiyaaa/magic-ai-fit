@@ -15,9 +15,8 @@ abstract class WorkoutLocalDataSource {
 const cachedWorkouts = 'CACHED_WORKOUTS';
 
 class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
-  final SharedPreferences sharedPreferences;
-
   WorkoutLocalDataSourceImpl({required this.sharedPreferences});
+  final SharedPreferences sharedPreferences;
 
   @override
   Future<List<WorkoutModel>> getWorkouts() {

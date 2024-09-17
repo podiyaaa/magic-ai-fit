@@ -1,1 +1,1 @@
-# magic-ai-fit
+# magic-ai-fi

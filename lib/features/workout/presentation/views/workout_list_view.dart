@@ -21,6 +21,9 @@ class WorkoutListView extends StatelessWidget {
           } else if (viewModel.error != null) {
             return Center(child: Text(viewModel.error!));
           } else {
+            if (viewModel.workouts.isEmpty) {
+              return const Center(child: Text('No Workouts'));
+            }
             return ListView.builder(
               itemCount: viewModel.workouts.length,
               itemBuilder: (context, index) {
@@ -41,8 +44,7 @@ class WorkoutListView extends StatelessWidget {
                       context.read<WorkoutListViewModel>().loadWorkouts();
                     },
                     onDelete: () async {
-                      final canDelete =
-                          await _showDeleteDialog(context, workout);
+                      final canDelete = await _showDeleteDialog(context);
                       if (canDelete ?? false) {
                         viewModel.removeWorkout(workout.id);
                       }
@@ -65,7 +67,9 @@ class WorkoutListView extends StatelessWidget {
     );
   }
 
-  Future<bool?> _showDeleteDialog(BuildContext context, Workout) async {
+  Future<bool?> _showDeleteDialog(
+    BuildContext context,
+  ) async {
     return await showDialog<bool>(
       context: context,
       builder: (context) {

@@ -6,11 +6,10 @@ import '../../domain/usecases/delete_workout.dart';
 import '../../domain/usecases/get_workouts.dart';
 
 class WorkoutListViewModel extends ChangeNotifier {
-  final GetWorkouts getWorkouts;
-  final DeleteWorkout deleteWorkout;
-
   WorkoutListViewModel(
       {required this.getWorkouts, required this.deleteWorkout});
+  final GetWorkouts getWorkouts;
+  final DeleteWorkout deleteWorkout;
 
   List<Workout> _workouts = [];
   List<Workout> get workouts => _workouts;
