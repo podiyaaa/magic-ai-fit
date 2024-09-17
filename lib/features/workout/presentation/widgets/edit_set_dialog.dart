@@ -28,7 +28,7 @@ class _EditSetDialogState extends State<EditSetDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit set'),
+      title: Text(widget.set.exercise.value),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -38,7 +38,7 @@ class _EditSetDialogState extends State<EditSetDialog> {
               child: Row(
                 children: [
                   Text(
-                    'Weight',
+                    'Weight (kg)',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ],
@@ -46,7 +46,7 @@ class _EditSetDialogState extends State<EditSetDialog> {
             ),
             Container(
               width: double.maxFinite,
-              height: MediaQuery.of(context).size.height * 0.2,
+              height: MediaQuery.of(context).size.height * 0.3,
               padding: const EdgeInsets.all(8.0),
               child: ChoiceChipPicker<WeightChoiceChipData>(
                 valueKey: const ValueKey('add_set_weight_choice_chip_picker'),
@@ -75,7 +75,7 @@ class _EditSetDialogState extends State<EditSetDialog> {
             ),
             Container(
               width: double.maxFinite,
-              height: MediaQuery.of(context).size.height * 0.2,
+              height: MediaQuery.of(context).size.height * 0.11,
               padding: const EdgeInsets.all(8.0),
               child: ChoiceChipPicker<RepetitionChoiceChipData>(
                 valueKey: const ValueKey('add_set_reps_choice_chip_picker'),

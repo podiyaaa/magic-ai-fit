@@ -51,6 +51,7 @@ class WorkoutSet extends Equatable {
 }
 
 enum Exercise {
+  selectExercise('Select Exercise'),
   barbellRow('Barbell Row'),
   deadlift('Deadlift'),
   benchPress('Bench Press'),

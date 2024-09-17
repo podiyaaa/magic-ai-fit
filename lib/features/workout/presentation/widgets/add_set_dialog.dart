@@ -23,9 +23,10 @@ class _AddSetDialogState extends State<AddSetDialog> {
   WeightChoiceChipData? _selectedWeightChoice;
   RepetitionChoiceChipData? _selectedRepsChoice;
   late final List<Exercise> _exercises = widget.exercises;
-  late Exercise? _exercise = _exercises.firstOrNull;
+  late Exercise? _exercise = _exercises.first;
   final ValueNotifier<bool> _showWeightNotFound = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _showRepsNotFound = ValueNotifier<bool>(false);
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -39,108 +40,138 @@ class _AddSetDialogState extends State<AddSetDialog> {
     return AlertDialog(
       title: const Text('Add set'),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownButtonFormField(
-              key: const ValueKey('add_set_exercise_dropdown'),
-              value: _exercise,
-              items: Exercise.values
-                  .map((exercise) => DropdownMenuItem<Exercise>(
-                        value: exercise,
-                        child: Text(exercise.value),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                _exercise = value;
-              },
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: _showWeightNotFound,
-                    builder: (context, value, child) {
-                      if (value) {
-                        return const Text(
-                          'Weight not found',
-                          style: TextStyle(color: Colors.red),
-                        );
-                      } else {
-                        return Text(
-                          'Weight',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: double.maxFinite,
-              height: MediaQuery.of(context).size.height * 0.2,
-              padding: const EdgeInsets.all(8.0),
-              child: ChoiceChipPicker<WeightChoiceChipData>(
-                valueKey: const ValueKey('add_set_weight_choice_chip_picker'),
-                choices: widget.weights
-                    .map(
-                      (weight) => WeightChoiceChipData(
-                        label: '$weight',
-                        value: weight,
-                      ),
-                    )
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField(
+                key: const ValueKey('add_set_exercise_dropdown'),
+                value: _exercise,
+                items: _exercises
+                    .map((exercise) => DropdownMenuItem<Exercise>(
+                          value: exercise,
+                          child: Text(exercise.value),
+                        ))
                     .toList(),
-                onSelected: (value) {
-                  _selectedWeightChoice = value;
+                onChanged: (value) {
+                  _exercise = value;
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select an exercise';
+                  } else if (value == Exercise.selectExercise) {
+                    return 'Please select an exercise';
+                  } else {
+                    return null;
+                  }
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: _showRepsNotFound,
-                    builder: (context, value, child) {
-                      if (value) {
-                        return const Text(
-                          'Repetitions not found',
-                          style: TextStyle(color: Colors.red),
-                        );
-                      } else {
-                        return Text('Repetitions',
-                            style: Theme.of(context).textTheme.titleMedium);
-                      }
-                    },
-                  )
-                ],
+              const SizedBox(
+                height: 8,
               ),
-            ),
-            Container(
-              width: double.maxFinite,
-              height: MediaQuery.of(context).size.height * 0.2,
-              padding: const EdgeInsets.all(8.0),
-              child: ChoiceChipPicker<RepetitionChoiceChipData>(
-                valueKey: const ValueKey('add_set_reps_choice_chip_picker'),
-                choices: widget.repetitions
-                    .map(
-                      (weight) => RepetitionChoiceChipData(
-                        label: '$weight',
-                        value: weight,
-                      ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Weight (kg)',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: double.maxFinite,
+                height: MediaQuery.of(context).size.height * 0.3,
+                padding: const EdgeInsets.all(8.0),
+                child: ChoiceChipPicker<WeightChoiceChipData>(
+                  valueKey: const ValueKey('add_set_weight_choice_chip_picker'),
+                  choices: widget.weights
+                      .map(
+                        (weight) => WeightChoiceChipData(
+                          label: '$weight',
+                          value: weight,
+                        ),
+                      )
+                      .toList(),
+                  onSelected: (value) {
+                    _selectedWeightChoice = value;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  children: [
+                    ValueListenableBuilder(
+                      valueListenable: _showWeightNotFound,
+                      builder: (context, value, child) {
+                        if (value) {
+                          return Text(
+                            'Weight not found',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
                     )
-                    .toList(),
-                onSelected: (value) {
-                  _selectedRepsChoice = value;
-                },
+                  ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    Text('Repetitions',
+                        style: Theme.of(context).textTheme.titleMedium)
+                  ],
+                ),
+              ),
+              Container(
+                width: double.maxFinite,
+                height: MediaQuery.of(context).size.height * 0.11,
+                padding: const EdgeInsets.all(8.0),
+                child: ChoiceChipPicker<RepetitionChoiceChipData>(
+                  valueKey: const ValueKey('add_set_reps_choice_chip_picker'),
+                  choices: widget.repetitions
+                      .map(
+                        (weight) => RepetitionChoiceChipData(
+                          label: '$weight',
+                          value: weight,
+                        ),
+                      )
+                      .toList(),
+                  onSelected: (value) {
+                    _selectedRepsChoice = value;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    ValueListenableBuilder(
+                      valueListenable: _showRepsNotFound,
+                      builder: (context, value, child) {
+                        if (value) {
+                          return Text(
+                            'Repetitions not found',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -152,6 +183,7 @@ class _AddSetDialogState extends State<AddSetDialog> {
           key: const ValueKey('add_set_save_button'),
           onPressed: () {
             if (_exercise == null ||
+                _formKey.currentState!.validate() == false ||
                 _selectedWeightChoice == null ||
                 _selectedRepsChoice == null) {
               _showWeightNotFound.value = _selectedWeightChoice == null;

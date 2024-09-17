@@ -33,6 +33,10 @@ class _WorkoutViewState extends State<WorkoutView> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvoked: (didPop) {
+        // ignore: use_build_context_synchronously
+        context.read<WorkoutViewModel>().reset();
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Consumer<WorkoutViewModel>(
@@ -46,8 +50,6 @@ class _WorkoutViewState extends State<WorkoutView> {
             onPressed: () async {
               final canLeave = await _showUnsavedDialog(context);
               if (canLeave) {
-                // ignore: use_build_context_synchronously
-                context.read<WorkoutViewModel>().reset();
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               }

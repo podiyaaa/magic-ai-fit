@@ -11,6 +11,15 @@ class WorkoutNameDialog extends StatefulWidget {
 class _WorkoutNameDialogState extends State<WorkoutNameDialog> {
   late final _nameController = TextEditingController(text: widget.workoutName);
   final _formKey = GlobalKey<FormState>();
+  final _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
 
   @override
   void dispose() {
@@ -25,6 +34,7 @@ class _WorkoutNameDialogState extends State<WorkoutNameDialog> {
       content: Form(
         key: _formKey,
         child: TextFormField(
+          focusNode: _focusNode,
           key: const ValueKey('workout_name_dialog_text_field'),
           controller: _nameController,
           decoration: const InputDecoration(labelText: 'Name'),
