@@ -1,4 +1,4 @@
-# magic-ai-fi
+# Magic AI Fit
 
 ## Overview
 
